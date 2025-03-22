@@ -137,13 +137,16 @@ export class DooyashadePlatformAccessory {
   }
 
   updateCurrentPosition(position: number) {
+    const previousPosition = this.currentPosition;
     this.currentPosition = position;
     this.service.updateCharacteristic(this.platform.Characteristic.CurrentPosition, this.currentPosition);
 
     // 更新运动状态
-    if (this.currentPosition === this.targetPosition) {
+    // 如果当前位置等于目标位置，或者位置没有变化，则设置状态为停止
+    if (this.currentPosition === this.targetPosition || previousPosition === this.currentPosition) {
       this.positionState = this.platform.Characteristic.PositionState.STOPPED;
       this.service.updateCharacteristic(this.platform.Characteristic.PositionState, this.positionState);
+      this.platform.log.debug('Position state updated to STOPPED');
     }
   }
 }
