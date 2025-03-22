@@ -1,0 +1,13 @@
+{
+  "debug": true,
+  "log": {
+    "level": "debug",
+    "output": "file",
+    "path": "homebridge.log",
+    "showTimestamp": true,
+    "showSourceFile": true,
+    "showStackTrace": true,
+    "maxSize": 10485760,
+    "maxFiles": 3
+  }
+}

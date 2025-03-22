@@ -1,22 +1,26 @@
 {
-  "name": "homebridge-plugin-name",
-  "displayName": "Plugin Name",
+  "name": "homebridge-dooyashade",
+  "displayName": "Dooya Shade RS485 TO TCP",
   "type": "module",
-  "version": "1.0.0",
-  "private": true,
-  "description": "A short description about what your plugin does.",
-  "author": "Your Name",
+  "version": "1.0.1",
+  "private": false,
+  "description": "Dooya Shade RS485 TO TCP",
+  "author": "rickyangkai",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/USERNAME/GITHUB_PROJECT_NAME#readme",
+  "homepage": "https://github.com/rickyangkai/homebridge-dooyashade#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "https://github.com/rickyangkai/homebridge-dooyashade.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/rickyangkai/homebridge-dooyashade/issues"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "dooya",
+    "shade",
+    "rs485",
+    "tcp"
   ],
   "main": "dist/index.js",
   "engines": {
@@ -27,7 +31,7 @@
     "build": "rimraf ./dist && tsc",
     "lint": "eslint . --max-warnings=0",
     "prepublishOnly": "npm run lint && npm run build",
-    "watch": "npm run build && npm link && nodemon"
+    "watch": "npm run build && npm link && nodemon -I"
   },
   "dependencies": {
     "homebridge-lib": "^7.1.4"

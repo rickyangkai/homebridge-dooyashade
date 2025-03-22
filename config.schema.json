@@ -1,17 +1,69 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "DooyaShade",
   "pluginType": "platform",
-  "singular": true,
-  "strictValidation": false,
+  "singular": false,
+  "headerDisplay": "Homebridge plugin for Dooya Shade (RS485 TO TCP)杜亚窗帘电机对接插件，需要使用TCP转串口模块",
+  "footerDisplay": "Created by @rickyangkai",
   "schema": {
-    "type": "object",
-    "properties": {
-      "name": {
-        "title": "Name",
-        "type": "string",
-        "required": true,
-        "default": "Example Dynamic Platform"
+      "type": "object",
+      "properties": {
+          "hubs": {
+              "type": "array",
+              "title": "Dooya 窗帘插件",
+              "description": "请填写网络转串口主机IP地址、端口、杜亚窗帘地址1、地址2",
+              "items": {
+                  "type": "object",
+                  "properties": {
+                      "HostIP": {
+                          "title": "IP地址",
+                          "type": "string",
+                          "required": true,
+                          "default": "192.168.1.100"
+                      },
+                      "HostPort": {
+                          "title": "端口号",
+                          "type": "integer",
+                          "default": 2001
+                      },
+                      "shades": {
+                          "type": "array",
+                          "title": "窗帘列表",
+                          "items": {
+                              "type": "object",
+                              "properties": {
+                                  "name": {
+                                      "title": "窗帘名称",
+                                      "type": "string",
+                                      "default": "窗帘1"
+                                  },
+                                  "address": {
+                                      "type": "object",
+                                      "properties": {
+                                          "address1": {
+                                              "title": "地址1(0为群控)",
+                                              "type": "integer",
+                                              "default": 1
+                                          },
+                                          "address2": {
+                                              "title": "地址2(0为群控)",
+                                              "type": "integer",
+                                              "default": 1
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+          "statePollingInterval": {              "title": "状态轮询间隔",
+              "description": "选择状态轮询间隔时间（分钟）",
+              "type": "string",
+              "default": "10",
+              "enum": ["10", "20", "30", "40", "50", "60"],
+              "enumNames": ["10分钟", "20分钟", "30分钟", "40分钟", "50分钟", "60分钟"]
+          }
       }
-    }
   }
 }
