@@ -2,7 +2,7 @@
   "name": "homebridge-dooyashade",
   "displayName": "Dooya Shade RS485 TO TCP",
   "type": "module",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": false,
   "description": "Dooya Shade RS485 TO TCP",
   "author": "rickyangkai",
