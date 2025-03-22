@@ -19,9 +19,11 @@ export class DooyashadePlatformAccessory {
     private readonly platform: DooyashadeHomebridgePlatform,
     private readonly accessory: PlatformAccessory,
   ) {
-    this.currentPosition = 0;
-    this.targetPosition = 0;
-    this.positionState = this.platform.Characteristic.PositionState.STOPPED;
+    // 从存储中恢复状态，如果没有则使用默认值
+    const storedState = this.accessory.context.state || {};
+    this.currentPosition = storedState.currentPosition || 0;
+    this.targetPosition = storedState.targetPosition || 0;
+    this.positionState = storedState.positionState || this.platform.Characteristic.PositionState.STOPPED;
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -145,5 +147,12 @@ export class DooyashadePlatformAccessory {
       this.positionState = this.platform.Characteristic.PositionState.STOPPED;
       this.service.updateCharacteristic(this.platform.Characteristic.PositionState, this.positionState);
     }
+
+    // 保存状态到持久化存储
+    this.accessory.context.state = {
+      currentPosition: this.currentPosition,
+      targetPosition: this.targetPosition,
+      positionState: this.positionState,
+    };
   }
 }
