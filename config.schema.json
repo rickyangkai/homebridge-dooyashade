@@ -6,6 +6,7 @@
   "footerDisplay": "Created by @rickyangkai",
   "schema": {
       "type": "object",
+
       "properties": {
           "hubs": {
               "type": "array",

@@ -6,5 +6,6 @@
   "editor.rulers": [
     140
   ],
-  "eslint.enable": true
+  "eslint.enable": true,
+  "marscode.chatLanguage": "cn"
 }

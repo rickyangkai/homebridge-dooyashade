@@ -14,6 +14,8 @@ export class DooyashadePlatformAccessory {
   private currentPosition: number;
   private targetPosition: number;
   private positionState: number;
+  private optimisticTimer?: NodeJS.Timeout;
+  private queryTimer?: NodeJS.Timeout;
 
   constructor(
     private readonly platform: DooyashadeHomebridgePlatform,
@@ -75,17 +77,17 @@ export class DooyashadePlatformAccessory {
     this.targetPosition = value as number;
     this.platform.log.debug('Set Characteristic TargetPosition ->', value);
 
-    // Update position state based on target position
-    if (this.targetPosition > this.currentPosition) {
-      this.positionState = this.platform.Characteristic.PositionState.INCREASING;
-    } else if (this.targetPosition < this.currentPosition) {
-      this.positionState = this.platform.Characteristic.PositionState.DECREASING;
-    } else {
-      this.positionState = this.platform.Characteristic.PositionState.STOPPED;
-    }
+    this.positionState = this.platform.Characteristic.PositionState.STOPPED;
 
     // Update the position state characteristic
     this.service.updateCharacteristic(this.platform.Characteristic.PositionState, this.positionState);
+    this.service.updateCharacteristic(this.platform.Characteristic.TargetPosition, this.targetPosition);
+
+    this.accessory.context.state = {
+      currentPosition: this.currentPosition,
+      targetPosition: this.targetPosition,
+      positionState: this.positionState,
+    };
 
     // Send control command to the device
     const { address1, address2 } = this.accessory.context.device.shade.address;
@@ -105,7 +107,14 @@ export class DooyashadePlatformAccessory {
     const tcpManager = this.platform.getTCPManager(this.accessory.context.device.hub);
     if (tcpManager) {
       tcpManager.send(commandWithCRC);
-      // Device will automatically send feedback, no need to query position
+      this.currentPosition = this.targetPosition;
+      this.service.updateCharacteristic(this.platform.Characteristic.CurrentPosition, this.currentPosition);
+      this.service.updateCharacteristic(this.platform.Characteristic.PositionState, this.positionState);
+      this.accessory.context.state = {
+        currentPosition: this.currentPosition,
+        targetPosition: this.targetPosition,
+        positionState: this.positionState,
+      };
     }
   }
 
@@ -139,6 +148,14 @@ export class DooyashadePlatformAccessory {
   }
 
   updateCurrentPosition(position: number) {
+    if (this.optimisticTimer) {
+      clearTimeout(this.optimisticTimer);
+      this.optimisticTimer = undefined;
+    }
+    if (this.queryTimer) {
+      clearTimeout(this.queryTimer);
+      this.queryTimer = undefined;
+    }
     this.currentPosition = position;
     this.service.updateCharacteristic(this.platform.Characteristic.CurrentPosition, this.currentPosition);
 
