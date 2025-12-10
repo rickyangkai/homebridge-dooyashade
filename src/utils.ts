@@ -7,6 +7,8 @@ export class TCPManager {
   private keepAliveTimer: NodeJS.Timeout | null = null;
   private isConnecting = false;
   private isConnected = false;
+  private sendQueue: Buffer[] = [];
+  private queueTimer: NodeJS.Timeout | null = null;
 
   constructor(
     private readonly host: string,
@@ -15,6 +17,7 @@ export class TCPManager {
     private readonly onData: (data: Buffer) => void,
     private readonly onConnect: () => void,
     private readonly onDisconnect: () => void,
+    private readonly sendIntervalMs: number = 500,
   ) {}
 
   connect() {
@@ -35,6 +38,7 @@ export class TCPManager {
       }
       this.startKeepAlive();
       this.onConnect();
+      this.processQueue();
     });
 
     this.socket.on('data', (data) => {
@@ -56,6 +60,10 @@ export class TCPManager {
       if (this.keepAliveTimer) {
         clearInterval(this.keepAliveTimer);
         this.keepAliveTimer = null;
+      }
+      if (this.queueTimer) {
+        clearTimeout(this.queueTimer);
+        this.queueTimer = null;
       }
       this.onDisconnect();
       this.scheduleReconnect();
@@ -93,19 +101,32 @@ export class TCPManager {
     }
   }
 
-  send(data: Buffer): boolean {
-    if (!this.socket?.writable) {
-      this.log.error('Socket not connected');
-      return false;
+  private processQueue() {
+    if (this.queueTimer) {
+      return;
     }
-
+    if (this.sendQueue.length === 0) {
+      return;
+    }
+    if (!this.socket?.writable || !this.isConnected) {
+      return;
+    }
+    const data = this.sendQueue.shift()!;
     try {
       this.socket.write(data);
-      return true;
     } catch (error) {
-      this.log.error('Failed to send data:', error);
-      return false;
+      this.log.error('Failed to send data:', error as Error);
     }
+    this.queueTimer = setTimeout(() => {
+      this.queueTimer = null;
+      this.processQueue();
+    }, this.sendIntervalMs);
+  }
+
+  send(data: Buffer): boolean {
+    this.sendQueue.push(data);
+    this.processQueue();
+    return true;
   }
 
   disconnect() {
@@ -123,6 +144,9 @@ export class TCPManager {
     }
   }
 }
+
+function noop() {}
+
 
 export class CRC16 {
   private static readonly POLYNOMIAL = 0xA001;

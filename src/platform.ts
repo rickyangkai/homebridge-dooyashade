@@ -66,6 +66,10 @@ export class DooyashadeHomebridgePlatform implements DynamicPlatformPlugin {
     }
 
     this.log.info(`Setting up new TCP manager for ${hubConfig.HostIP}:${hubConfig.HostPort}`);
+    const cfg = this.config as Record<string, unknown>;
+    const sendIntervalMs = typeof cfg.controlSendIntervalMs === 'number'
+      ? (cfg.controlSendIntervalMs as number)
+      : parseInt((cfg.controlSendIntervalMs as string) || '500', 10);
     const tcpManager = new TCPManager(
       hubConfig.HostIP,
       hubConfig.HostPort,
@@ -73,6 +77,7 @@ export class DooyashadeHomebridgePlatform implements DynamicPlatformPlugin {
       (data) => this.handleTCPData(data, hubConfig),
       () => this.handleTCPConnect(hubConfig),
       () => this.handleTCPDisconnect(hubConfig),
+      sendIntervalMs,
     );
 
     this.tcpManagers.set(key, tcpManager);

@@ -64,6 +64,18 @@
               "default": "10",
               "enum": ["10", "20", "30", "40", "50", "60"],
               "enumNames": ["10分钟", "20分钟", "30分钟", "40分钟", "50分钟", "60分钟"]
+          },
+          "controlSendIntervalMs": {
+              "title": "控制发送间隔(毫秒)",
+              "description": "多设备连续控制时，控制指令之间的最小发送间隔",
+              "type": "integer",
+              "default": 500
+          },
+          "controlQueryFallback": {
+              "title": "控制后立即查询兜底",
+              "description": "发送控制命令后短延迟主动查询一次设备状态以校准",
+              "type": "boolean",
+              "default": false
           }
       }
   }
