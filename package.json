@@ -10,7 +10,7 @@
   "homepage": "https://github.com/rickyangkai/homebridge-dooyashade#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rickyangkai/homebridge-dooyashade.git"
+    "url": "git+https://github.com/rickyangkai/homebridge-dooyashade.git"
   },
   "bugs": {
     "url": "https://github.com/rickyangkai/homebridge-dooyashade/issues"
